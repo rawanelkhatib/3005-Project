@@ -726,7 +726,6 @@ public class Main {
                     ResultSet rs3 = query(con, "select stock from book where isbn = '" + cart.get(i) + "'");
                     rs3.next();
                     int stock = rs3.getInt(1);
-                    System.out.println("Stock - ? = " + (stock-cartQuantity.get(i)));
                     update(con, "insert into book_sales values (" + saleNextId + ", '" + cart.get(i) + "', " + cartQuantity.get(i) +")");
                     update(con, "update book set stock = (stock - " + cartQuantity.get(i) + ") where isbn = '" + cart.get(i) + "'");
 
