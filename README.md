@@ -7,6 +7,6 @@ Setup Instructions:
 Later
 
 Files:
-Main.java
-DDL.sql
-Add.sql
+Main.java -> runs the program
+DDL.sql -> creates tables from the database
+Insert.sql -> initializes database with values 
