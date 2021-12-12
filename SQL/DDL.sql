@@ -59,7 +59,7 @@ create table book_sales
 	);
 
 create table sold_to
-	(traking_id		numeric(8), 
+	(sale_id		numeric(8), 
      	username		varchar(20),
 	 primary key (sale_id, username),
 	 foreign key (sale_id) references sale(sale_id)
