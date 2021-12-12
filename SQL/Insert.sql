@@ -8,10 +8,10 @@ insert into book values
 ('3600843936511', 'Lord of the Flies', 'william Golding', 'Fiction', 342, 1, 32.99, 15.45, 19, 5);
 
 insert into profile values 
-('brandon', 'Brandon', '1234', '990 Dew drop road, sudbry on, p3g1l2', 1);
+('brandon', 'Brandon', '1234', '990 Dew drop road, sudbry on, p3g1l2', 'Account Number: 373633, Transit Number: 009, Branch Number: 909090', 1);
 
 insert into profile values 
-('rawan', 'Rawan', '1234', 'The Big Pyramid, Egypt', 0);
+('rawan', 'Rawan', '1234', 'The Big Pyramid, Egypt', 'Account Number: 373633, Transit Number: 009, Branch Number: 909090' 0);
 
 insert into publisher values
 (3, 'HaperCollins', '195 Broadway New York, NY 10007 USA', 'orders@harpercollins.com', '8002427737', 'Account number: 438490, Transit Number: 456' );
