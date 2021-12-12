@@ -631,7 +631,7 @@ public class Main {
                 ResultSet rs = query(con, "select book_name, author, genre, pages, price, stock from book where isbn = '" + cart.get(i) + "'");
                 rs.next();
                 System.out.println((i+1) + ". Title: " + rs.getString(1) + ". Author: " + rs.getString(2) + ". Genre: " +
-                            rs.getString(3) + ". Pages: " + rs.getInt(4) + ". Price: $" + rs.getDouble(5) + "Quantity: " + cartQuantity.get(i) + ". Stock: " + rs.getInt(6));
+                            rs.getString(3) + ". Pages: " + rs.getInt(4) + ". Price: $" + rs.getDouble(5) + ". Quantity: " + cartQuantity.get(i) + ". Stock: " + rs.getInt(6));
 
             } catch (Exception e) {
                 System.out.println("Error in getting book " + (i+1));
