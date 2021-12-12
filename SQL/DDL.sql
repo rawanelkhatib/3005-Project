@@ -10,13 +10,13 @@ create table publisher
 	 pub_name		varchar(100), 
 	 address		varchar(100),
 	 email			varchar(100),
-	 phone			varchar(11),
+	 phone			varchar(20),
 	 banking	 	varchar(100),
 	 primary key (pub_id)
 	);
 
 create table book
-	(isbn			varchar(13),
+	(isbn			varchar(15),
 	 book_name		varchar(100),
 	 author			varchar(100),
 	 genre			varchar(100),
@@ -33,7 +33,7 @@ create table book
 
 create table profile
 	(username		varchar(20), 
-	 pf_name		varchar(20), 
+	 real_name		varchar(20), 
 	 password		varchar(20),
 	 shipping		varchar(100),
 	 banking		varchar(100),
