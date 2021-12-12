@@ -401,7 +401,7 @@ public class Main {
 
     public static void customerMenu(Connection con) {
             System.out.println("Welcome to Look-A-Book BookStore main menu " + username_global + "!\nEnter 1 to browse/search the book library.\n" +
-                    "Enter 2 to make an view previous purchases.\nEnter 0 to logout.");
+                    "Enter 2 to view previous purchases.\nEnter 0 to logout.");
 
             Scanner in = new Scanner(System.in);
             String choice = in.nextLine();
