@@ -281,11 +281,11 @@ public class Main {
             //getting price
             System.out.println("Enter the price of the book");
             Scanner in7 = new Scanner(System.in);
-            int price = in7.nextInt();
+            double price = in7.nextDouble();
             //getting cost
             System.out.println("Enter the cost of the book");
             Scanner in8 = new Scanner(System.in);
-            int cost = in8.nextInt();
+            double cost = in8.nextDouble();
             //getting stock
             System.out.println("Enter the stock of the book");
             Scanner in9 = new Scanner(System.in);
