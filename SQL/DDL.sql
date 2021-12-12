@@ -36,6 +36,7 @@ create table profile
 	 pf_name		varchar(20), 
 	 password		varchar(20),
 	 shipping		varchar(100),
+	 banking		varchar(100),
 	 owner			numeric(1) check (owner is not null),
 	 primary key (username)
 	);
@@ -58,7 +59,7 @@ create table book_sales
 	);
 
 create table sold_to
-	(sale_id		numeric(8), 
+	(traking_id		numeric(8), 
      	username		varchar(20),
 	 primary key (sale_id, username),
 	 foreign key (sale_id) references sale(sale_id)
@@ -66,4 +67,3 @@ create table sold_to
 	 foreign key (username) references profile(username)
 		on delete cascade
 	);
-
