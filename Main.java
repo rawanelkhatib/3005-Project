@@ -480,7 +480,7 @@ public class Main {
 
         switch (choice) {
             case "0":
-                browse(con);
+                customerMenu(con);
 
             case "1":
                 addToCart(con, searchBooks(con));
@@ -734,7 +734,6 @@ public class Main {
                                 "and date > (select now() - '1 month'::INTERVAL)");
                         rs4.next();
                         int monthSold = rs4.getInt(1);
-                        System.out.println("monthSold = " + monthSold);
                         update(con, "update book set stock = (stock + " + monthSold + ") where isbn = '" + cart.get(i) + "'");
                     }
                 }
