@@ -51,7 +51,7 @@ create table sale
 
 create table book_sales
 	(sale_id		numeric(8), 
-     	 isbn			varchar(13),
+     	 isbn			varchar(15),
 	 num_sold		numeric(8),
 	 primary key (sale_id, isbn),
 	 foreign key (isbn) references book(isbn)
