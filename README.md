@@ -16,7 +16,7 @@ You need Java version 13 or above to be able to use the code.
 Create a new project in your IDE (we used intelliJ, so some instructions may differ based on your IDE). 
 In your project create a new class in your src file called Main. 
 Copy and paste the Main.java file into the new class created.
-In the project structure, opnen modules and add the postgresql-42.3.1.jar file as one of the dependencies into the external libraries (where the jdk is stored). 
+In the project structure, open modules and add the postgresql-42.3.1.jar file as one of the dependencies into the external libraries (where the jdk is stored). 
 Click apply and the code should now be connected to your database. 
 
 Before running the code, in the main function (line 765), check that the port in the dbURl is the same port used for your database. 
