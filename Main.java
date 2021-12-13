@@ -805,7 +805,11 @@ public class Main {
             Class.forName ("org.postgresql.Driver");
             String dbURL = "jdbc:postgresql://localhost:5432/BookStore"; //change to the correct port
             String user = "postgres";
-            String pass = "student"; //whatever your password for postgres is
+            
+            System.out.println("Enter your postgres password to access the database.\nIf there is an error your password is incorrect.");
+            Scanner in = new Scanner(System.in);
+            String pass = in.nextLine(); //whatever your password for postgres is
+            
             Connection con = DriverManager.getConnection(dbURL, user, pass);
 
             ResultSet rs = query(con, "select max(sale_id) as max_id from sale");
