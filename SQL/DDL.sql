@@ -1,10 +1,3 @@
-drop table sold_to;
-drop table book_sales;
-drop table sale;
-drop table profile;
-drop table book;
-drop table publisher;
-
 create table publisher
 	(pub_id			numeric(8), 
 	 pub_name		varchar(100), 
@@ -67,3 +60,169 @@ create table sold_to
 	 foreign key (username) references profile(username)
 		on delete cascade
 	);
+
+
+create or replace function getRevenueBookName(nameIN varchar (100))
+returns decimal
+as
+$$
+declare curr_price decimal;
+declare rec RECORD;
+begin
+	curr_price = 0;
+	for rec in (select price, num_sold, percentage from book natural join book_sales where upper(book_name) = upper(nameIN)) loop
+			curr_price = curr_price + rec.num_sold*rec.price - rec.price*rec.percentage*.01;
+	end loop;
+	return curr_price;
+end;
+$$ language plpgsql;
+
+create or replace function getRevenueGenre(genreIN varchar (100))
+returns decimal
+as
+$$
+declare curr_price decimal;
+declare rec RECORD;
+begin
+	curr_price = 0;
+	for rec in (select price, num_sold, percentage from book natural join book_sales where upper(genre) = upper(genreIN)) loop
+			curr_price = curr_price + rec.num_sold*rec.price - rec.price*rec.percentage*.01;
+	end loop;
+	return curr_price;
+end;
+$$ language plpgsql;
+
+create or replace function getRevenueAuthor(authorIN varchar (100))
+returns decimal
+as
+$$
+declare curr_price decimal;
+declare rec RECORD;
+begin
+	curr_price = 0;
+	for rec in (select price, num_sold, percentage from book natural join book_sales where upper(author) = upper(authorIN)) loop
+			curr_price = curr_price + rec.num_sold*rec.price - rec.price*rec.percentage*.01;
+	end loop;
+	return curr_price;
+end;
+$$ language plpgsql;
+
+create or replace function getRevenueISBN(isbnIN varchar (100))
+returns decimal
+as
+$$
+declare curr_price decimal;
+declare rec RECORD;
+begin
+	curr_price = 0;
+	for rec in (select price, num_sold, percentage from book natural join book_sales where upper(isbn) = upper(isbnIN)) loop
+			curr_price = curr_price + rec.num_sold*rec.price - rec.price*rec.percentage*.01;
+	end loop;
+	return curr_price;
+end;
+$$ language plpgsql;
+
+create or replace function getCostGenre(genreIN varchar (100))
+returns decimal
+as
+$$
+declare curr_cost decimal;
+declare rec RECORD;
+begin
+	curr_cost = 0;
+	for rec in (select cost, num_sold from book natural join book_sales where upper(genre) = upper(genreIN)) loop
+			curr_cost = curr_cost + rec.num_sold*rec.cost;
+	end loop;
+	return curr_cost;
+end;
+$$ language plpgsql;
+
+create or replace function getCostAuthor(authorIN varchar (100))
+returns decimal
+as
+$$
+declare curr_cost decimal;
+declare rec RECORD;
+begin
+	curr_cost = 0;
+	for rec in (select cost, num_sold from book natural join book_sales where upper(author) = upper(authorIN)) loop
+			curr_cost = curr_cost + rec.num_sold*rec.cost;
+	end loop;
+	return curr_cost;
+end;
+$$ language plpgsql;
+
+create or replace function getCostISBN(isbnIN varchar (100))
+returns decimal
+as
+$$
+declare curr_cost decimal;
+declare rec RECORD;
+begin
+	curr_cost = 0;
+	for rec in (select cost, num_sold from book natural join book_sales where upper(isbn) = upper(isbnIN)) loop
+			curr_cost = curr_cost + rec.num_sold*rec.cost;
+	end loop;
+	return curr_cost;
+end;
+$$ language plpgsql;
+
+create or replace function getCostBookName(nameIN varchar (100))
+returns decimal
+as
+$$
+declare curr_cost decimal;
+declare rec RECORD;
+begin
+	curr_cost = 0;
+	for rec in (select cost, num_sold from book natural join book_sales where upper(book_name) = upper(nameIN)) loop
+			curr_cost = curr_cost + rec.num_sold*rec.cost;
+	end loop;
+	return curr_cost;
+end;
+$$ language plpgsql;
+
+create or replace function getTotalCostinStock()
+returns decimal
+as
+$$
+declare curr_cost decimal;
+declare rec RECORD;
+begin
+	curr_cost = 0;
+	for rec in (select cost, stock from book) loop
+			curr_cost = curr_cost + rec.cost*rec.stock;
+	end loop;
+	return curr_cost;
+end;
+$$ language plpgsql;
+
+create or replace function getTotalCostofSales()
+returns decimal
+as
+$$
+declare curr_cost decimal;
+declare rec RECORD;
+begin
+	curr_cost = 0;
+	for rec in (select cost, num_sold from book natural join book_sales) loop
+			curr_cost = curr_cost + rec.cost*rec.num_sold;
+	end loop;
+	return curr_cost;
+end;
+$$ language plpgsql;
+
+create or replace function getCostToPublishers()
+returns decimal
+as
+$$
+declare curr_cost decimal;
+declare rec RECORD;
+begin
+	curr_cost = 0;
+	for rec in (select price, num_sold, percentage from book natural join book_sales) loop
+			curr_cost = curr_cost + rec.num_sold*rec.price*rec.percentage*.01;
+	end loop;
+	return curr_cost;
+end;
+$$ language plpgsql;
