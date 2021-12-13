@@ -304,35 +304,41 @@ public class Main {
     }
 
     public static void removeBook (Connection con){
+        ArrayList<String> bookList = new ArrayList<>();
         try {
-            ResultSet rs = query(con, "select ISBN, book_name from book");
+            ResultSet rs = query(con, "select ISBN, book_name, author from book");
             while (rs.next()) {
-                System.out.println("ISBN " + rs.getString(1) + ". Book name: " + rs.getString(2));
+                System.out.println((bookList.size()+1) + ". Title: " + rs.getString(2) + ". Author: " + rs.getString(3) + ". ISBN: " + rs.getString(1));
+                bookList.add(rs.getString(1));
             }
         }catch (Exception e) { System.out.println("Error. No Books with your request."); }
 
         try {
-            System.out.println("Enter book ISBN that you want to delete or enter 0 to return to the owner menu.");
+            System.out.println("Enter number of the book that you want to delete or enter 0 to return to the owner menu.");
             Scanner in = new Scanner(System.in);
-            String ISBN = in.nextLine();
+            int bookNum = parseInt(in.nextLine());
 
-            if (ISBN.equals("0")) {
+            if (bookNum == 0) {
                 ownerMenu(con);
                 return;
+            } else if (bookNum > 0 && bookNum <= bookList.size()) {
+                update(con, "delete from book where isbn = '" + bookList.get(bookNum-1) + "'");
             } else {
-                update(con, "delete from book where ISBN = ' " + ISBN + " '");
+                System.out.println("Out of bounds try again.");
+                removeBook(con);
+                return;
             }
         }catch (Exception e) {
-            System.out.println("Error removing book, try again");
+            System.out.println("Error. Invalid input, try again");
             removeBook(con);
         }
         System.out.println("Book Removed Successfully!");
-        ownerMenu(con);
+        removeBook(con);
     }
 
     public static void browseSales (Connection con){
         System.out.println("What kind of sale would you like to view\nEnter 1 to browse sales per genre.\nEnter 2 to browse sales per author.\n" +
-                "Enter 3 to browse by sales vs expenditures.\nEnter 0 to return to the owner menu.");
+                "Enter 3 to browse sales by book name.\nEnter 4 to browse sales by book isbn.\nEnter 5 to browse by sales vs expenditures.\nEnter 0 to return to the owner menu.");
 
         Scanner in = new Scanner(System.in);
         String choice = in.nextLine();
@@ -342,7 +348,8 @@ public class Main {
             case "1" -> saleByGenre(con);
             case "2" -> saleByAuthor(con);
             case "3" -> saleByBookName(con);
-            case "4" -> saleByPriceVSCost(con);
+            case "4" -> saleByISBN(con);
+            case "5" -> saleByPriceVSCost(con);
             default -> {
                 System.out.println("Incorrect Input try again.");
                 browseSales(con);
@@ -352,50 +359,90 @@ public class Main {
 
     public static void saleByGenre(Connection con){ //do one for all
         try{
-            System.out.println("What genre would you like to check the sales for");
-            Scanner in = new Scanner(System.in);
-            String genre = in.nextLine();
-            ResultSet rs = query(con,"select sale_id, ISBN, num_sold from book_sales natural join book where upper(genre) = upper('"+ genre + "')");
+            ResultSet rs = query(con,"select distinct genre from book natural join book_sales");
             while(rs.next()) {
-                System.out.println("sale_id: " + rs.getString(1) + ". ISBN: " + rs.getString(2) + ". num_sold: " + rs.getString(3));
+                ResultSet rs2 = query(con,"select getRevenueGenre('" + rs.getString(1) + "'), getCostGenre('" + rs.getString(1) + "')," +
+                        "sum(num_sold) from book natural join book_sales where genre = '" + rs.getString(1) + "'");
+                rs2.next();
+
+                System.out.println("Genre: " + rs.getString(1) + ". Amount Sold: " + rs2.getInt(3) + ". Revenue: $" + rs2.getDouble(1) +
+                        ". Cost: $" + rs2.getDouble(2) + ". Profit: $" + (rs2.getDouble(1)-rs2.getDouble(2)));
             }
 
         } catch (Exception e) { System.out.println("Error. No sales with your request."); }
+        System.out.println();
         browseSales(con);
     }
 
     public static void saleByAuthor(Connection con){
+        //System.out.println("What author would you like to check the sales for");
+        //Scanner in = new Scanner(System.in);
+        //String author = in.nextLine();
+
         try{
-            System.out.println("What author would you like to check the sales for");
-            Scanner in = new Scanner(System.in);
-            String author = in.nextLine();
-            ResultSet rs = query(con,"select sale_id, ISBN, num_sold from book_sales natural join book where upper(author) = upper('"+ author + "')");
+            ResultSet rs = query(con,"select distinct author from book natural join book_sales");
             while(rs.next()) {
-                System.out.println("sale_id: " + rs.getString(1) + ". ISBN: " + rs.getString(2) + ". num_sold: " + rs.getString(3));
+                ResultSet rs2 = query(con,"select getRevenueAuthor('" + rs.getString(1) + "'), getCostAuthor('" + rs.getString(1) + "')," +
+                        "sum(num_sold) from book natural join book_sales where author = '" + rs.getString(1) + "'");
+                rs2.next();
+
+                System.out.println("Author: " + rs.getString(1) + ". Amount Sold: " + rs2.getInt(3) + ". Revenue: $" + rs2.getDouble(1) +
+                        ". Cost: $" + rs2.getDouble(2) + ". Profit: $" + (rs2.getDouble(1)-rs2.getDouble(2)));
             }
 
         } catch (Exception e) { System.out.println("Error. No sales with your request."); }
+        System.out.println();
         browseSales(con);
     }
 
     public static void saleByBookName(Connection con){
+        System.out.println("What book name would you like to check the sales for");
+         Scanner in = new Scanner(System.in);
+         String bookName = in.nextLine();
+
         try{
-            System.out.println("What book name would you like to check the sales for");
-            Scanner in = new Scanner(System.in);
-            String book_name = in.nextLine();
-            ResultSet rs = query(con,"select sale_id, ISBN, num_sold from book_sales natural join book where upper(book_name) = upper('"+ book_name + "')");
+            ResultSet rs = query(con,"select distinct isbn, book_name, author from book natural join book_sales where upper(book_name) = upper('" + bookName + "')");
             while(rs.next()) {
-                System.out.println("sale_id: " + rs.getString(1) + ". ISBN: " + rs.getString(2) + ". num_sold: " + rs.getString(3));
+                ResultSet rs2 = query(con,"select getRevenueBookName('" + bookName + "'), getCostBookName('" + bookName + "')," +
+                        "sum(num_sold) from book natural join book_sales where isbn = '" + rs.getString(1) + "'");
+                rs2.next();
+                System.out.println("ISBN: " + rs.getString(1) + ". Book Name: " + rs.getString(2) + ". Author: " + rs.getString(3) + ".  Amount Sold: " + rs2.getInt(3) + ". Revenue: $" + rs2.getDouble(1) +
+                        ". Cost: $" + rs2.getDouble(2) + ". Profit: $" + (rs2.getDouble(1)-rs2.getDouble(2)));
             }
 
         } catch (Exception e) { System.out.println("Error. No sales with your request."); }
+        System.out.println();
         browseSales(con);
     }
 
-    public static void saleByPriceVSCost(Connection con){
+    public static void saleByISBN(Connection con){
+        System.out.println("What book isbn would you like to check the sales for");
+        Scanner in = new Scanner(System.in);
+        String isbn = in.nextLine();
+
         try{
+            ResultSet rs = query(con,"select book_name, author from book natural join book_sales where isbn = '" + isbn + "'");
+            rs.next();
+            ResultSet rs2 = query(con,"select getRevenueISBN('" + isbn + "'), getCostISBN('" + isbn + "')," +
+                    "sum(num_sold) from book natural join book_sales where isbn = '" + isbn + "'");
+            rs2.next();
+            System.out.println("ISBN: " + isbn + ". Book Name: " + rs.getString(1) + ". Author: " + rs.getString(2) + ".  Amount Sold: " + rs2.getInt(3) + ". Revenue: $" + rs2.getDouble(1) +
+                    ". Cost: $" + rs2.getDouble(2) + ". Profit: $" + (rs2.getDouble(1)-rs2.getDouble(2)));
+
 
         } catch (Exception e) { System.out.println("Error. No sales with your request."); }
+        System.out.println();
+        browseSales(con);
+    }
+
+    public static void saleByPriceVSCost(Connection con){ //include profit margin, net profit, percent given to publishers etc
+        try{
+            ResultSet rs = query(con,"select sum(total), getTotalCostofSales(), getTotalCostInStock(), getCostToPublishers() from sale");
+            rs.next();
+            System.out.println("Total Sales vs Expenditures\nRevenue: $" + rs.getDouble(1) + ". Cost from sales: $" + rs.getDouble(2) +
+                    ". Cost in Stock: $" + rs.getDouble(3) + ". Cost to Publishers: $" + rs.getDouble(4) + ". Profit: $" + (rs.getDouble(1) - rs.getDouble(2) - rs.getDouble(2) - rs.getDouble(3)));
+        } catch (Exception e) { System.out.println("Error. No sales with your request."); }
+        System.out.println();
         browseSales(con);
     }
 
@@ -735,6 +782,7 @@ public class Main {
                         rs4.next();
                         int monthSold = rs4.getInt(1);
                         update(con, "update book set stock = (stock + " + monthSold + ") where isbn = '" + cart.get(i) + "'");
+                        System.out.println("Emailing publisher. Requesting " + monthSold + " more books of isbn: " + cart.get(i));
                     }
                 }
 
