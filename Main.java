@@ -381,7 +381,7 @@ public class Main {
             ResultSet rs = query(con,"select distinct author from book natural join book_sales");
             while(rs.next()) {
                 ResultSet rs2 = query(con,"select getRevenueAuthor('" + rs.getString(1) + "'), getCostAuthor('" + rs.getString(1) + "')," +
-                        "sum(num_sold) from book natural join book_sales where author = '" + rs.getString(1) + "'");
+                        "sum(num_sold) from book natural join book_sales where upper(author) like upper('%" + rs.getString(1) + "%')");
                 rs2.next();
 
                 System.out.println("Author: " + rs.getString(1) + ". Amount Sold: " + rs2.getInt(3) + ". Revenue: $" + rs2.getDouble(1) +
@@ -399,7 +399,7 @@ public class Main {
          String bookName = in.nextLine();
 
         try{
-            ResultSet rs = query(con,"select distinct isbn, book_name, author from book natural join book_sales where upper(book_name) = upper('" + bookName + "')");
+            ResultSet rs = query(con,"select distinct isbn, book_name, author from book natural join book_sales where upper(book_name) like upper('%" + bookName + "%')");
             while(rs.next()) {
                 ResultSet rs2 = query(con,"select getRevenueBookName('" + bookName + "'), getCostBookName('" + bookName + "')," +
                         "sum(num_sold) from book natural join book_sales where isbn = '" + rs.getString(1) + "'");
@@ -455,6 +455,10 @@ public class Main {
             case "0" -> logout(con);
             case "1" -> browse(con);
             case "2" -> viewPurchases(con);
+            default -> {
+                System.out.println("Incorrect input try again");
+                customerMenu(con);
+            }
         }
     }
 
@@ -587,7 +591,7 @@ public class Main {
 
     public static ArrayList<String> searchBooks(Connection con, String column, String q) { //prints all books in library with given query
         try {
-            ResultSet rs = query(con, "select isbn, book_name, author, genre, pages, price, stock from book where upper(" + column + ") like upper('" + q + "')");
+            ResultSet rs = query(con, "select isbn, book_name, author, genre, pages, price, stock from book where upper(" + column + ") like upper('%" + q + "%')");
             ArrayList<String> isbnList = new ArrayList<String>();
             int counter = 1;
 
@@ -805,11 +809,11 @@ public class Main {
             Class.forName ("org.postgresql.Driver");
             String dbURL = "jdbc:postgresql://localhost:5432/BookStore"; //change to the correct port
             String user = "postgres";
-            
+
             System.out.println("Enter your postgres password to access the database.\nIf there is an error your password is incorrect.");
             Scanner in = new Scanner(System.in);
             String pass = in.nextLine(); //whatever your password for postgres is
-            
+
             Connection con = DriverManager.getConnection(dbURL, user, pass);
 
             ResultSet rs = query(con, "select max(sale_id) as max_id from sale");
